@@ -1,7 +1,9 @@
 import pygame
-import constants
+from constants import *
 import sys
-import player 
+from player import *
+from asteroid import *
+from asteroidfield import *
 
 def main():
     pygame.init()
@@ -11,16 +13,27 @@ def main():
         sys.exit(1)
 
     #Initialise Screen Settings
-    screen = pygame.display.set_mode((constants.SCREEN_WIDTH,constants.SCREEN_HEIGHT))
-    #Instantiate Player
-    player_sprite = player.Player(constants.SCREEN_WIDTH/2,constants.SCREEN_HEIGHT/2)
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+    #Create Groups
+    updatable_grp = pygame.sprite.Group()
+    drawable_grp = pygame.sprite.Group()
+    asteroids_grp = pygame.sprite.Group()
+    shots_grp = pygame.sprite.Group()
+    #Add containers to classes before instantiation
+    Player.containers = (updatable_grp,drawable_grp)
+    Asteroid.containers = (asteroids_grp,updatable_grp,drawable_grp)
+    AsteroidField.containers = (updatable_grp)
+    #Instantiate Player in middle of screen
+    player_sprite = Player(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+    asteroid_field = AsteroidField()
     #Get game clock
     game_clk = pygame.time.Clock()
     dt = 0
     
+
     print("Starting Asteroids!")
-    print(f"Screen width: {constants.SCREEN_WIDTH}")
-    print(f"Screen height: {constants.SCREEN_HEIGHT}")
+    print(f"Screen width: {SCREEN_WIDTH}")
+    print(f"Screen height: {SCREEN_HEIGHT}")
       
     while True:
         #Check for Quit event
@@ -28,11 +41,18 @@ def main():
             if event.type == pygame.QUIT:
                 return
       
-        player_sprite.update(dt)     
-      
+        updatable_grp.update(dt)     
+        #Check if any asteroids collided
+        for asteroid in asteroids_grp:
+            if asteroid.is_colliding(player_sprite):
+                print("Game over!")
+                sys.exit(0)
+        
         screen.fill("black")
         #Draw player sprite
-        player_sprite.draw(screen) 
+        for drawable in drawable_grp:
+            drawable.draw(screen)
+
         pygame.display.flip()
         dt = game_clk.tick(60) /1000
        
