@@ -23,6 +23,7 @@ def main():
     Player.containers = (updatable_grp,drawable_grp)
     Asteroid.containers = (asteroids_grp,updatable_grp,drawable_grp)
     AsteroidField.containers = (updatable_grp)
+    Shot.containers = (shots_grp,drawable_grp,updatable_grp)
     #Instantiate Player in middle of screen
     player_sprite = Player(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
     asteroid_field = AsteroidField()
