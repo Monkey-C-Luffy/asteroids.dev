@@ -14,16 +14,19 @@ def main():
 
     #Initialise Screen Settings
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+    
     #Create Groups
     updatable_grp = pygame.sprite.Group()
     drawable_grp = pygame.sprite.Group()
     asteroids_grp = pygame.sprite.Group()
     shots_grp = pygame.sprite.Group()
+    
     #Add containers to classes before instantiation
     Player.containers = (updatable_grp,drawable_grp)
     Asteroid.containers = (asteroids_grp,updatable_grp,drawable_grp)
     AsteroidField.containers = (updatable_grp)
     Shot.containers = (shots_grp,drawable_grp,updatable_grp)
+    
     #Instantiate Player in middle of screen
     player_sprite = Player(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
     asteroid_field = AsteroidField()
@@ -31,7 +34,13 @@ def main():
     game_clk = pygame.time.Clock()
     dt = 0
     
-
+    score = 0
+    font = pygame.font.Font(pygame.font.match_font("consolas"),24)
+    text_surf = font.render(f"Score:{score}",True,"blue","grey")
+    text_rect = text_surf.get_rect()
+    text_rect.center = (50,50)
+    
+    
     print("Starting Asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
@@ -40,7 +49,8 @@ def main():
         #Check for Quit event
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                pygame.quit()
+                quit()
       
         updatable_grp.update(dt)     
         #Check if any asteroids collided
@@ -51,9 +61,11 @@ def main():
             for shot in shots_grp:
                 if asteroid.is_colliding(shot):
                     shot.kill()
-                    asteroid.split()
+                    score += asteroid.split()
         
         screen.fill("black")
+        text_surf = font.render(f"Score:{score}",True,"blue","grey")
+        screen.blit(text_surf,text_rect)
         #Draw player sprite
         for drawable in drawable_grp:
             drawable.draw(screen)

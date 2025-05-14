@@ -16,7 +16,10 @@ class Asteroid(CircleShape):
     def split(self):
         self.kill()
         if self.radius <= ASTEROID_MIN_RADIUS:
-            return
+            #if asteroid is min,give max score
+            print(f"Asteroid with radius:{self.radius} has been destroyed,MAX score given:{ASTEROID_PTS_MAX_SCORE}")
+            return ASTEROID_PTS_MAX_SCORE
+
         angle = random.uniform(20,50)
         split_vector_L = self.velocity.rotate(angle)
         split_vector_R = self.velocity.rotate(-angle)
@@ -25,3 +28,10 @@ class Asteroid(CircleShape):
         asteroid_R = Asteroid(self.position.x,self.position.y,new_radius)
         asteroid_L.velocity = split_vector_L * 1.2
         asteroid_R.velocity = split_vector_R * 1.2
+        
+        score = self.calculate_score() 
+        print(f"Asteroid with radius:{self.radius} has been split, score given:{score}")
+        return score
+    
+    def calculate_score(self):
+        return (ASTEROID_MAX_RADIUS - self.radius+4) * ASTEROID_PTS_MULT
